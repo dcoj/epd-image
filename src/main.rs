@@ -1,11 +1,14 @@
 use std::env;
+mod crop;
 mod dither;
 mod epd;
 mod error;
+mod immich;
 mod png;
 mod server;
 use std::path::Path;
 
+use dotenv::dotenv;
 use error::Result;
 use server::{start_server, ServerConfig};
 
@@ -14,6 +17,7 @@ pub const EPD_HEIGHT: usize = 480;
 
 #[tokio::main]
 async fn main() {
+    dotenv().ok();
     if let Err(e) = run().await {
         eprintln!("Error: {}", e);
         std::process::exit(1);
@@ -32,8 +36,8 @@ async fn run() -> Result<()> {
         "server" => run_server().await,
         "convert" => run_cli(&args).await,
         _ => {
-            // Default to CLI mode for backward compatibility
-            run_cli(&args).await
+            // Default to server
+            run_server().await
         }
     }
 }

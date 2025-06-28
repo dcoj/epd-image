@@ -6,7 +6,7 @@ use crate::EPD_WIDTH;
 pub fn dither_image(pixels: Vec<Color>) -> Result<(Vec<u8>, [Color; 7])> {
     println!("Converting image");
 
-    // Define the fixed palette
+    // Define the fixed palette for our display
     let palette: [Color; 7] = [
         Color::new(0, 0, 0, 255),       // Black
         Color::new(255, 255, 255, 255), // White

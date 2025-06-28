@@ -8,7 +8,10 @@ pub fn save_epd(path: &str, indexed_image: &[u8]) -> Result<()> {
     // Write EPD file with our custom format
     let output_file = File::create(path)?;
     let mut writer = BufWriter::new(output_file);
+    write_epd(&mut writer, indexed_image)
+}
 
+pub fn write_epd<W: Write>(writer: &mut BufWriter<W>, indexed_image: &[u8]) -> Result<()> {
     // Write a simple header inspired by
     // https://www.waveshare.com/wiki/7.3inch_e-Paper_HAT_(F)_Manual#Picture_Processing
     writer.write_all(b"EPD7")?; // waveshare Magic number
@@ -35,7 +38,7 @@ pub fn save_epd(path: &str, indexed_image: &[u8]) -> Result<()> {
     }
 
     writer.flush()?;
-    println!("EPD file saved successfully!");
+    println!("EPD data written successfully!");
 
     return Ok(());
 }
