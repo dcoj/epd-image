@@ -9,7 +9,8 @@ use axum::{
 use rand::seq::IndexedRandom;
 use reqwest::Client;
 use serde::Deserialize;
-use std::sync::Arc;
+use std::io::Cursor;
+use std::{num::NonZeroU32, sync::Arc};
 use tower_http::services::ServeDir;
 
 #[derive(Debug, Clone)]
@@ -55,6 +56,45 @@ impl PhotoClient {
     pub fn new(config: ServerConfig) -> Self {
         let client = Client::new();
         Self { client, config }
+    }
+
+    pub async fn get_optimised_image(&self) -> Result<Vec<u8>> {
+        let height = 480;
+        let width = 800;
+
+        let jpg = self.get_recent_photo().await?;
+
+        // let image: ImageBuffer<image::Rgb<u8>, Vec<u8>> =
+        //     ImageBuffer::from_vec(info.width.into(), info.height.into(), buf)
+        //         .expect("Failed to create image buffer");
+
+        let image = image::io::Reader::new(Cursor::new(jpg))
+            .with_guessed_format()?
+            .decode()?;
+
+        println!("Got an image of {}x{}", image.width(), image.height(),);
+
+        let res = smartcrop::find_best_crop(
+            &image,
+            NonZeroU32::new(width.into()).unwrap(),
+            NonZeroU32::new(height.into()).unwrap(),
+        )
+        .expect("Failed to find crop");
+
+        println!(
+            "cropping to x{} y{} w{} h{} ({})",
+            res.crop.x, res.crop.y, res.crop.width, res.crop.height, res.score.total
+        );
+        let c = res.crop;
+        let cropped = image.crop_imm(c.x, c.y, c.width, c.height);
+        let scaled = cropped.resize(width, height, image::imageops::FilterType::Lanczos3);
+        let mut out = Vec::new();
+        scaled.write_to(
+            &mut Cursor::new(&mut out),
+            image::ImageOutputFormat::Jpeg(100),
+        )?;
+
+        Ok(out.clone())
     }
 
     pub async fn get_recent_photo(&self) -> Result<Vec<u8>> {
@@ -164,7 +204,7 @@ pub async fn start_server(config: ServerConfig) -> Result<()> {
     tokio::fs::create_dir_all(&config.samples_dir).await?;
 
     let app = Router::new()
-        .route("/recent", get(get_recent_photo))
+        .route("/recent", get(get_recent))
         .nest_service("/samples", ServeDir::new(&config.samples_dir))
         .route("/health", get(health_check))
         .with_state(photo_client);
@@ -184,8 +224,8 @@ pub async fn start_server(config: ServerConfig) -> Result<()> {
     Ok(())
 }
 
-async fn get_recent_photo(State(client): State<Arc<PhotoClient>>) -> impl IntoResponse {
-    match client.get_recent_photo().await {
+async fn get_recent(State(client): State<Arc<PhotoClient>>) -> impl IntoResponse {
+    match client.get_optimised_image().await {
         Ok(image_data) => {
             let headers = [
                 (header::CONTENT_TYPE, "image/jpeg"),

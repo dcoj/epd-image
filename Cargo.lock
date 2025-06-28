@@ -366,6 +366,7 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
+ "smartcrop2",
  "tokio",
  "tower 0.4.13",
  "tower-http",
@@ -768,9 +769,9 @@ checksum = "4a5f13b858c8d314ee3e8f639011f7ccefe71f97f96e50151fb991f267928e2c"
 
 [[package]]
 name = "jpeg-decoder"
-version = "0.3.1"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f5d4a7da358eff58addd2877a45865158f0d78c911d43a5784ceb7bbf52833b0"
+checksum = "00810f1d8b74be64b13dbf3db89ac67740615d6c891f0e7b6179326533011a07"
 dependencies = [
  "rayon",
 ]
@@ -1353,6 +1354,15 @@ name = "smallvec"
 version = "1.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3c5e1a9a646d36c3599cd173a41282daf47c44583ad367b8e6837255952e5c67"
+
+[[package]]
+name = "smartcrop2"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1188ff8c4c28ff12a5b8690a67ffe9bd48e71635c251d90b47eff516013f27d0"
+dependencies = [
+ "image",
+]
 
 [[package]]
 name = "socket2"
