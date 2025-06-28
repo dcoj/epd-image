@@ -19,7 +19,7 @@ fn main() {
 
 fn run() -> Result<()> {
     let args: Vec<String> = env::args().collect();
-    if args.len() != 3 {
+    if args.len() != 2 {
         eprintln!("Usage: {} <input.png>", args[0]);
         std::process::exit(1);
     }

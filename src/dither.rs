@@ -19,7 +19,8 @@ pub fn dither_image(pixels: Vec<Color>) -> Result<(Vec<u8>, [Color; 7])> {
 
     println!("Remapping image to palette");
     let colorspace = SimpleColorSpace::default();
-    let ditherer = ditherer::FloydSteinberg::new();
+    // let ditherer = ditherer::FloydSteinberg::checkered();
+    let ditherer = ditherer::Ordered;
 
     // Create a remapper with our fixed palette
     let remapper = Remapper::new(&palette, &colorspace, &ditherer);
