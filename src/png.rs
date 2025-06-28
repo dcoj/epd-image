@@ -1,39 +1,13 @@
 use exoquant::*;
 use image::{Rgba, RgbaImage};
 
+use crate::error::{Error, Result};
 use crate::{EPD_HEIGHT, EPD_WIDTH};
 
-#[derive(Debug)]
-pub enum Error {
-    Image(image::ImageError),
-    WrongDimensions(usize, usize),
-    LodepngError(lodepng::Error),
-    Io(std::io::Error),
-    ImageEncodeError(image::error::ImageError),
-}
+pub fn load_png(input_path: &str) -> Result<Vec<Color>> {
+    let input_image = lodepng::decode32_file(input_path)?;
 
-impl From<std::io::Error> for Error {
-    fn from(e: std::io::Error) -> Self {
-        Error::Io(e)
-    }
-}
-
-impl From<lodepng::Error> for Error {
-    fn from(e: lodepng::Error) -> Self {
-        Error::LodepngError(e)
-    }
-}
-
-impl From<image::error::ImageError> for Error {
-    fn from(e: image::error::ImageError) -> Self {
-        Error::ImageEncodeError(e)
-    }
-}
-
-pub fn load_png(input_path: &str) -> Result<Vec<Color>, Error> {
-    let input_image = lodepng::decode32_file(input_path).map_err(Error::LodepngError)?;
-
-    // Check dimensions
+    // Before we do anything, check the image dimensions are correct
     if input_image.width != EPD_WIDTH || input_image.height != EPD_HEIGHT {
         return Err(Error::WrongDimensions(
             input_image.width,
@@ -41,7 +15,7 @@ pub fn load_png(input_path: &str) -> Result<Vec<Color>, Error> {
         ));
     }
 
-    // Convert input_image to a Vec<Color> before quantization
+    // Convert input_image to a Vec<Color> for quantization
     let pixels: Vec<Color> = input_image
         .buffer
         .iter()
@@ -51,8 +25,8 @@ pub fn load_png(input_path: &str) -> Result<Vec<Color>, Error> {
     return Ok(pixels);
 }
 
-// Save a PNG preview of the indexed image
-pub fn save_png(path: &str, indexed_image: &[u8], palette: &[Color]) -> Result<(), Error> {
+// Save a PNG of the indexed image
+pub fn save_png(path: &str, indexed_image: &[u8], palette: &[Color]) -> Result<()> {
     // Create a new RGBA image
     let mut img = RgbaImage::new(EPD_WIDTH as u32, EPD_HEIGHT as u32);
 
@@ -75,5 +49,6 @@ pub fn save_png(path: &str, indexed_image: &[u8], palette: &[Color]) -> Result<(
     }
 
     // Save the image
-    img.save(path).map_err(Error::ImageEncodeError)
+    img.save(path)?;
+    Ok(())
 }

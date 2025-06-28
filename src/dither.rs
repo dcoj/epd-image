@@ -1,35 +1,9 @@
 use exoquant::*;
 
+use crate::error::Result;
 use crate::EPD_WIDTH;
 
-#[derive(Debug)]
-pub enum Error {
-    Image(image::ImageError),
-    WrongDimensions(usize, usize),
-    LodepngError(lodepng::Error),
-    Io(std::io::Error),
-    ImageEncodeError(image::error::ImageError),
-}
-
-impl From<std::io::Error> for Error {
-    fn from(e: std::io::Error) -> Self {
-        Error::Io(e)
-    }
-}
-
-impl From<lodepng::Error> for Error {
-    fn from(e: lodepng::Error) -> Self {
-        Error::LodepngError(e)
-    }
-}
-
-impl From<image::error::ImageError> for Error {
-    fn from(e: image::error::ImageError) -> Self {
-        Error::ImageEncodeError(e)
-    }
-}
-
-pub fn dither_image(pixels: Vec<Color>) -> Result<(Vec<u8>, [Color; 7]), Error> {
+pub fn dither_image(pixels: Vec<Color>) -> Result<(Vec<u8>, [Color; 7])> {
     println!("Converting image");
 
     // Define the fixed palette
