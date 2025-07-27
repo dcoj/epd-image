@@ -9,8 +9,8 @@ use std::num::NonZeroU32;
 pub async fn crop_image(image: DynamicImage, width: u32, height: u32) -> Result<Vec<u8>> {
     let res = smartcrop::find_best_crop(
         &image,
-        NonZeroU32::new(width.into()).unwrap(),
-        NonZeroU32::new(height.into()).unwrap(),
+        NonZeroU32::new(width).unwrap(),
+        NonZeroU32::new(height).unwrap(),
     )
     .expect("Failed to find crop");
     // println!(

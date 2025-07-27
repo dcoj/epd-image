@@ -30,7 +30,7 @@ impl PhotoClient {
         println!("Getting buckets");
         let time_bucket_id = &self.get_fav_bucket().await?;
         println!("Chose {}", time_bucket_id);
-        let thumbnail_id = &self.get_photo_from_bucket(time_bucket_id).await?;
+        let thumbnail_id = self.get_photo_from_bucket(time_bucket_id).await?;
         println!("Got {}", thumbnail_id);
         // Now download the actual image using the thumbnail ID
         self.download_image(&thumbnail_id).await
@@ -64,17 +64,17 @@ impl PhotoClient {
             .time_bucket
             .clone();
 
-        return Ok(time_bucket_id);
+        Ok(time_bucket_id)
     }
 
-    async fn get_photo_from_bucket(&self, time_bucket_id: &String) -> Result<String> {
+    async fn get_photo_from_bucket(&self, time_bucket_id: &str) -> Result<String> {
         // First, get the timeline data
         let timeline_url = format!("{}/api/timeline/bucket", self.config.photo_api_base_url);
 
         let params = [
             ("isFavorite", "true"),
             ("isTrashed", "false"),
-            ("timeBucket", &time_bucket_id),
+            ("timeBucket", time_bucket_id),
             // ("visibility", "timeline"),
             // ("withPartners", "true"),
             ("withStacked", "true"),
@@ -101,7 +101,7 @@ impl PhotoClient {
             .ok_or(Error::NoThumbnailFound)?
             .clone();
 
-        return Ok(thumbnail_id);
+        Ok(thumbnail_id)
     }
 
     async fn download_image(&self, image_id: &str) -> Result<Vec<u8>> {

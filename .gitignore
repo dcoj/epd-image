@@ -3,3 +3,4 @@
 /samples
 /target
 /.env
+.DS_Store

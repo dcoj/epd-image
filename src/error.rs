@@ -2,7 +2,7 @@
 pub enum Error {
     Image(image::ImageError),
     WrongDimensions(usize, usize),
-    LodepngError(lodepng::Error),
+    Lodepng(lodepng::Error),
     Io(std::io::Error),
     Http(reqwest::Error),
     Json(serde_json::Error),
@@ -15,7 +15,7 @@ impl std::fmt::Display for Error {
         match self {
             Error::Image(e) => write!(f, "Image error: {}", e),
             Error::WrongDimensions(w, h) => write!(f, "Wrong dimensions: {}x{}", w, h),
-            Error::LodepngError(e) => write!(f, "PNG error: {}", e),
+            Error::Lodepng(e) => write!(f, "PNG error: {}", e),
             Error::Io(e) => write!(f, "IO error: {}", e),
             Error::Http(e) => write!(f, "HTTP error: {}", e),
             Error::Json(e) => write!(f, "JSON error: {}", e),
@@ -29,7 +29,7 @@ impl std::error::Error for Error {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
             Error::Image(e) => Some(e),
-            Error::LodepngError(e) => Some(e),
+            Error::Lodepng(e) => Some(e),
             Error::Io(e) => Some(e),
             Error::Http(e) => Some(e),
             Error::Json(e) => Some(e),
@@ -48,7 +48,7 @@ impl From<std::io::Error> for Error {
 
 impl From<lodepng::Error> for Error {
     fn from(e: lodepng::Error) -> Self {
-        Error::LodepngError(e)
+        Error::Lodepng(e)
     }
 }
 

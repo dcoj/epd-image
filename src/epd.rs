@@ -40,5 +40,5 @@ pub fn write_epd<W: Write>(writer: &mut BufWriter<W>, indexed_image: &[u8]) -> R
     writer.flush()?;
     println!("EPD data written successfully!");
 
-    return Ok(());
+    Ok(())
 }

@@ -96,5 +96,5 @@ pub fn generate_preview_path(epd_path: &str) -> String {
     let path = Path::new(epd_path);
     // Just use the current directory to avoid permission issues
     let stem = path.file_stem().unwrap_or_default().to_string_lossy();
-    return stem.to_string();
+    stem.to_string()
 }

@@ -22,7 +22,7 @@ pub fn load_png(input_path: &str) -> Result<Vec<Color>> {
         .map(|p| Color::new(p.r, p.g, p.b, p.a))
         .collect();
 
-    return Ok(pixels);
+    Ok(pixels)
 }
 
 // Save a PNG of the indexed image
