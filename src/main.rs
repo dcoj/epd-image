@@ -19,7 +19,7 @@ pub const EPD_HEIGHT: usize = 480;
 async fn main() {
     dotenv().ok();
     if let Err(e) = run().await {
-        eprintln!("Error: {}", e);
+        eprintln!("Error: {e}");
         std::process::exit(1);
     }
 }
@@ -77,15 +77,9 @@ async fn run_cli(args: &[String]) -> Result<()> {
 
 fn print_usage(program_name: &str) {
     eprintln!("Usage:");
-    eprintln!(
-        "  {} <input.png>        Convert PNG to EPD format",
-        program_name
-    );
-    eprintln!(
-        "  {} convert <input.png> Convert PNG to EPD format",
-        program_name
-    );
-    eprintln!("  {} server             Start HTTP server", program_name);
+    eprintln!("  {program_name} <input.png>        Convert PNG to EPD format");
+    eprintln!("  {program_name} convert <input.png> Convert PNG to EPD format");
+    eprintln!("  {program_name} server             Start HTTP server");
     eprintln!();
     eprintln!("Server Environment Variables:");
     eprintln!("  PHOTO_API_KEY         API key for photo service (required for /recent endpoint)");

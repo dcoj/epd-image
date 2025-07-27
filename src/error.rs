@@ -13,12 +13,12 @@ pub enum Error {
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Error::Image(e) => write!(f, "Image error: {}", e),
-            Error::WrongDimensions(w, h) => write!(f, "Wrong dimensions: {}x{}", w, h),
-            Error::Lodepng(e) => write!(f, "PNG error: {}", e),
-            Error::Io(e) => write!(f, "IO error: {}", e),
-            Error::Http(e) => write!(f, "HTTP error: {}", e),
-            Error::Json(e) => write!(f, "JSON error: {}", e),
+            Error::Image(e) => write!(f, "Image error: {e}"),
+            Error::WrongDimensions(w, h) => write!(f, "Wrong dimensions: {w}x{h}"),
+            Error::Lodepng(e) => write!(f, "PNG error: {e}"),
+            Error::Io(e) => write!(f, "IO error: {e}"),
+            Error::Http(e) => write!(f, "HTTP error: {e}"),
+            Error::Json(e) => write!(f, "JSON error: {e}"),
             Error::NoThumbnailFound => write!(f, "No thumbnail found in API response"),
             Error::InvalidApiResponse => write!(f, "Invalid API response format"),
         }

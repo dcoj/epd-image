@@ -29,9 +29,9 @@ impl PhotoClient {
     pub async fn get_recent_photo(&self) -> Result<Vec<u8>> {
         println!("Getting buckets");
         let time_bucket_id = &self.get_fav_bucket().await?;
-        println!("Chose {}", time_bucket_id);
+        println!("Chose {time_bucket_id}");
         let thumbnail_id = self.get_photo_from_bucket(time_bucket_id).await?;
-        println!("Got {}", thumbnail_id);
+        println!("Got {thumbnail_id}");
         // Now download the actual image using the thumbnail ID
         self.download_image(&thumbnail_id).await
     }

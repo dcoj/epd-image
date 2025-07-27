@@ -48,11 +48,11 @@ pub async fn start_server(config: ServerConfig) -> Result<()> {
         .with_state(photo_client);
 
     let addr = format!("0.0.0.0:{}", config.port);
-    println!("Starting server on {}", addr);
+    println!("Starting server on {addr}");
     println!("Serving static files from: {}", config.samples_dir);
-    println!("Health check available at: http://{}/health", addr);
-    println!("Recent photo endpoint: http://{}/recent", addr);
-    println!("Static files: http://{}/samples/", addr);
+    println!("Health check available at: http://{addr}/health");
+    println!("Recent photo endpoint: http://{addr}/recent");
+    println!("Static files: http://{addr}/samples/");
 
     let listener = tokio::net::TcpListener::bind(&addr)
         .await
@@ -85,7 +85,7 @@ async fn get_recent(State(client): State<Arc<PhotoClient>>) -> impl IntoResponse
             (headers, image_data).into_response()
         }
         Err(e) => {
-            eprintln!("Error fetching recent photo: {}", e);
+            eprintln!("Error fetching recent photo: {e}");
             let error_response = Json(serde_json::json!({
                 "error": "Failed to fetch recent photo"
             }));
