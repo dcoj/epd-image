@@ -8,3 +8,12 @@ license = "MIT OR Apache-2.0"
 image = "0.24"
 exoquant = "0.2.0"
 lodepng = "3.8"
+axum = "0.7"
+rand = "*"
+tokio = { version = "1.0", features = ["full"] }
+reqwest = { version = "0.11", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tower = "0.4"
+tower-http = { version = "0.5", features = ["fs"] }
+anyhow = "1.0"

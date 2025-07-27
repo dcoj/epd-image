@@ -3,24 +3,57 @@ mod dither;
 mod epd;
 mod error;
 mod png;
+mod server;
 use std::path::Path;
 
 use error::Result;
+use server::{start_server, ServerConfig};
 
 pub const EPD_WIDTH: usize = 800;
 pub const EPD_HEIGHT: usize = 480;
 
-fn main() {
-    if let Err(e) = run() {
+#[tokio::main]
+async fn main() {
+    if let Err(e) = run().await {
         eprintln!("Error: {}", e);
         std::process::exit(1);
     }
 }
 
-fn run() -> Result<()> {
+async fn run() -> Result<()> {
     let args: Vec<String> = env::args().collect();
+
+    if args.len() < 2 {
+        print_usage(&args[0]);
+        std::process::exit(1);
+    }
+
+    match args[1].as_str() {
+        "server" => run_server().await,
+        "convert" => run_cli(&args).await,
+        _ => {
+            // Default to CLI mode for backward compatibility
+            run_cli(&args).await
+        }
+    }
+}
+
+async fn run_server() -> Result<()> {
+    println!("Starting photo-desk server...");
+
+    let config = ServerConfig::default();
+
+    if config.api_key.is_empty() {
+        eprintln!("Warning: PHOTO_API_KEY environment variable not set");
+        eprintln!("The /recent endpoint will not work without a valid API key");
+    }
+
+    start_server(config).await
+}
+
+async fn run_cli(args: &[String]) -> Result<()> {
     if args.len() != 2 {
-        eprintln!("Usage: {} <input.png>", args[0]);
+        print_usage(&args[0]);
         std::process::exit(1);
     }
 
@@ -36,6 +69,22 @@ fn run() -> Result<()> {
     png::save_png(&preview_path, &indexed_image, &palette)?;
 
     Ok(())
+}
+
+fn print_usage(program_name: &str) {
+    eprintln!("Usage:");
+    eprintln!(
+        "  {} <input.png>        Convert PNG to EPD format",
+        program_name
+    );
+    eprintln!(
+        "  {} convert <input.png> Convert PNG to EPD format",
+        program_name
+    );
+    eprintln!("  {} server             Start HTTP server", program_name);
+    eprintln!();
+    eprintln!("Server Environment Variables:");
+    eprintln!("  PHOTO_API_KEY         API key for photo service (required for /recent endpoint)");
 }
 
 // Generate a preview PNG path from the EPD path

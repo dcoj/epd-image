@@ -4,6 +4,10 @@ pub enum Error {
     WrongDimensions(usize, usize),
     LodepngError(lodepng::Error),
     Io(std::io::Error),
+    Http(reqwest::Error),
+    Json(serde_json::Error),
+    NoThumbnailFound,
+    InvalidApiResponse,
 }
 
 impl std::fmt::Display for Error {
@@ -13,6 +17,10 @@ impl std::fmt::Display for Error {
             Error::WrongDimensions(w, h) => write!(f, "Wrong dimensions: {}x{}", w, h),
             Error::LodepngError(e) => write!(f, "PNG error: {}", e),
             Error::Io(e) => write!(f, "IO error: {}", e),
+            Error::Http(e) => write!(f, "HTTP error: {}", e),
+            Error::Json(e) => write!(f, "JSON error: {}", e),
+            Error::NoThumbnailFound => write!(f, "No thumbnail found in API response"),
+            Error::InvalidApiResponse => write!(f, "Invalid API response format"),
         }
     }
 }
@@ -23,7 +31,11 @@ impl std::error::Error for Error {
             Error::Image(e) => Some(e),
             Error::LodepngError(e) => Some(e),
             Error::Io(e) => Some(e),
+            Error::Http(e) => Some(e),
+            Error::Json(e) => Some(e),
             Error::WrongDimensions(_, _) => None,
+            Error::NoThumbnailFound => None,
+            Error::InvalidApiResponse => None,
         }
     }
 }
@@ -43,6 +55,18 @@ impl From<lodepng::Error> for Error {
 impl From<image::error::ImageError> for Error {
     fn from(e: image::error::ImageError) -> Self {
         Error::Image(e)
+    }
+}
+
+impl From<reqwest::Error> for Error {
+    fn from(e: reqwest::Error) -> Self {
+        Error::Http(e)
+    }
+}
+
+impl From<serde_json::Error> for Error {
+    fn from(e: serde_json::Error) -> Self {
+        Error::Json(e)
     }
 }
 
